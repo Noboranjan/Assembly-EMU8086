@@ -1,0 +1,67 @@
+.model small
+.stack 100h
+.code
+
+main proc
+    
+    xor bx,bx
+    xor ax,ax
+    
+    mov ah,1
+    int 21h
+
+while_:    
+    cmp al,0dh
+    je disp   
+    cmp al,39h
+    jg alpha 
+    and al,0Fh  
+    jmp beta
+alpha:
+    sub al,37h   
+beta:     
+    shl bx,4
+    or bl,al
+    int 21h
+    jmp while_
+    
+disp:
+
+    mov ah,2
+    mov dl,0dh
+    int 21h
+    mov dl,0ah
+    int 21h
+             
+    xor cx,cx
+    mov cx,4  
+    jcxz exit 
+    
+top:
+    mov ah,2
+    mov dl,bh
+    shr dl,4
+    cmp dl,0Ah
+    jl number
+    add dl,37h
+    int 21h 
+    jmp endjob
+    
+number:
+    add dl,30h
+    int 21h
+    
+endjob:
+    
+    rol bx,4
+    loop top
+    
+                    
+        
+exit:
+            
+    mov ah,4ch
+    int 21h
+    main endp
+end main   
+    

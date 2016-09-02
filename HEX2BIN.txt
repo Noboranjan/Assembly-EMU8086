@@ -1,0 +1,60 @@
+.MODEL SMALL
+.STACK 100H
+.DATA    
+.CODE
+MAIN PROC  
+    XOR BX,BX       ;Clearing
+    MOV CL,0        ;Loop Initializer
+    MOV AH,1 
+    INT 21H
+    
+ INPUT:              ;Loop for input
+    CMP AL,0DH       ;Check for Carriage Return [Enter]
+    JE INIT_OUT
+    CMP AL,39H       ;Check Greater than 9
+    JG GT9  
+  
+    SUB AL,30H       ;Less 9
+    JMP SHIFT
+ GT9:
+    SUB AL,37H
+    
+ 
+ SHIFT: 
+    SHL BX,4         ;Shift 4 times
+    OR BL,AL         ;Set the input bits on Lower 4 bits
+    INT 21H
+    JMP INPUT
+    
+     
+ INIT_OUT:            
+    MOV AH,2
+    MOV DL,0DH       ;CARRIAGE RETURN
+    INT 21H
+    MOV DL,0AH       ;NEWLINE
+    INT 21H
+    
+ BINOUT:
+    
+    CMP CL,16
+    JE ENDD
+    INC CL
+    SHL BX,1
+    JC OP1       ;CF = 1
+    JNC OP0      ;CF = 0
+    
+ OP1:
+    MOV DL,'1'   
+    INT 21H
+    JMP BINOUT
+ OP0:
+    MOV DL,'0'
+    INT 21H
+    JMP BINOUT  
+
+ ENDD:
+    MOV AH,4CH
+    INT 21H
+    
+    MAIN ENDP
+END MAIN           
